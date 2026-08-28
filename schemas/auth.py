@@ -15,6 +15,7 @@ class UserResponse(BaseModel):
     id: str
     email: EmailStr
     is_active: bool
+    is_admin: bool = False
 
     class Config:
         from_attributes = True
@@ -23,3 +24,4 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+

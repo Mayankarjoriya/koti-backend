@@ -1,5 +1,5 @@
 [project]
-name = "newpro-venv"
+name = "koti-backend"
 version = "0.1.0"
 description = "Signal Next.js + FastAPI application"
 readme = "README.md"
@@ -20,4 +20,5 @@ dependencies = [
     "pyjwt>=2.13.0",
     "python-multipart>=0.0.32",
     "aiosqlite>=0.22.1",
+    "cloudinary>=1.40.0",
 ]

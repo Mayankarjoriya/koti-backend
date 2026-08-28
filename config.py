@@ -8,11 +8,27 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        origins = os.getenv("ALLOWED_ORIGINS")
+        if origins:
+            if origins.strip() == "*":
+                self.ALLOWED_ORIGINS = ["*"]
+            elif "," in origins:
+                self.ALLOWED_ORIGINS = [o.strip() for o in origins.split(",") if o.strip()]
+            else:
+                self.ALLOWED_ORIGINS = [origins.strip()]
+
     # Third-party credentials
-    TURNSTILE_SECRET_KEY: str = ""
+    TURNSTILE_SECRET_KEY: str = ""  # TODO: Set after domain purchase
     RESEND_API_KEY: str = ""
     CONTACT_EMAIL_TO: str = ""
     FROM_EMAIL: str = "Signal Website <onboarding@resend.dev>"
+
+    # Cloudinary (image hosting for projects)
+    CLOUDINARY_CLOUD_NAME: str = ""
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
 
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./signal.db"  # Defaulting to sqlite for ease of local dev if postgres isn't setup

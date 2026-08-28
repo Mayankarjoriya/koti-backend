@@ -10,11 +10,11 @@ class ContactSchema(BaseModel):
         ..., description="Selected service category"
     )
     message: str = Field(..., min_length=10, max_length=2000, description="Message body details")
-    turnstile_token: str = Field(
-        ...,
+    # Turnstile token is optional until domain is configured — TODO: make required after domain purchase
+    turnstile_token: Optional[str] = Field(
+        None,
         validation_alias=AliasChoices("turnstile_token", "turnstileToken"),
-        min_length=1,
-        description="Cloudflare Turnstile token for verification"
+        description="Cloudflare Turnstile token for verification (disabled until domain is set up)"
     )
 
 

@@ -7,8 +7,12 @@ from config import settings
 from routers.contact import router as contact_router, limiter
 from routers.auth import router as auth_router
 from routers.agents import router as agents_router
+from routers.projects import router as projects_router
+from routers.services import router as services_router
+from routers.admin_panel import router as admin_router
 from database import engine
 from models.base import Base
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Signal Backend API",
@@ -33,7 +37,14 @@ app.add_middleware(
 app.include_router(contact_router)
 app.include_router(auth_router)
 app.include_router(agents_router)
+app.include_router(projects_router)
+app.include_router(services_router)
+app.include_router(admin_router)
 
+# Mount static files for admin panel
+import os
+os.makedirs("static", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.on_event("startup")
 async def startup_event():
     # Only suitable for dev. In prod use Alembic migrations.
