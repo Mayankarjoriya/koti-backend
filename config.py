@@ -1,23 +1,28 @@
 import os
-from typing import List
+from typing import List, Any
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     PORT: int = 8000
     HOST: str = "0.0.0.0"
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    ALLOWED_ORIGINS: Any = ["http://localhost:3000"]
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        origins = os.getenv("ALLOWED_ORIGINS")
-        if origins:
-            if origins.strip() == "*":
-                self.ALLOWED_ORIGINS = ["*"]
-            elif "," in origins:
-                self.ALLOWED_ORIGINS = [o.strip() for o in origins.split(",") if o.strip()]
-            else:
-                self.ALLOWED_ORIGINS = [origins.strip()]
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        if isinstance(v, str):
+            if v.strip() == "*":
+                return ["*"]
+            if v.startswith("[") and v.endswith("]"):
+                import json
+                try:
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [o.strip() for o in v.split(",") if o.strip()]
+        return v
 
     # Third-party credentials
     TURNSTILE_SECRET_KEY: str = ""  # TODO: Set after domain purchase
@@ -42,7 +47,7 @@ class Settings(BaseSettings):
     OPENROUTER_API_KEY: str = ""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "v.env"),
         env_file_encoding="utf-8",
         extra="ignore"
     )
